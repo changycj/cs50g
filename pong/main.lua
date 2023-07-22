@@ -93,6 +93,9 @@ function love.load()
     player1 = Paddle(10, 30, 5, 20)
     player2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 
+    old_predict_y = 0
+    predict_y_with_error = 0
+
     -- place a ball in the middle of the screen
     ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
@@ -241,13 +244,35 @@ function love.update(dt)
         player1.dy = 0
     end
 
-    -- player 2
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
-    else
-        player2.dy = 0
+    -- player 2 (AI player)
+    if gameState == 'play' then
+        -- only try to move paddle when ball is moving towards AI
+        if ball.dx > 0 then
+            -- AI tries to predict where the ball will hit its paddle
+            t = (player2.x - ball.x) / ball.dx
+            predict_y = ball.y + ball.dy * t
+
+            -- Only update prediction when it's significantly different
+            if math.abs(predict_y - old_predict_y) > player2.height / 2 then
+                -- Simulates the AI predicting incorrectly
+                -- We adjust the range as a proportion of the paddle height
+                -- A larger range means a lower difficulty
+                local difficulty = player2.height / 4
+                predict_y_with_error = predict_y + math.random(-difficulty, difficulty)
+                old_predict_y = predict_y
+            end
+
+            -- Move based on the prediction with error
+            if predict_y_with_error > (player2.y + player2.height) then
+                player2.dy = PADDLE_SPEED
+            elseif predict_y_with_error < player2.y then
+                player2.dy = -PADDLE_SPEED
+            else
+                player2.dy = 0
+            end
+        else
+            player2.dy = 0
+        end
     end
 
     -- update our ball based on its DX and DY only if we're in play state;
