@@ -10,6 +10,10 @@
 
 ScoreState = Class{__includes = BaseState}
 
+local GOLD_MEDAL = love.graphics.newImage('gold.png')
+local SILVER_MEDAL = love.graphics.newImage('silver.png')
+local BRONZE_MEDAL = love.graphics.newImage('bronze.png')
+
 --[[
     When we enter the score state, we expect to receive the score
     from the play state so we know what to render to the State.
@@ -25,6 +29,23 @@ function ScoreState:update(dt)
     end
 end
 
+local function getMedal(score)
+    if score >= 10 then
+        return GOLD_MEDAL
+    end
+
+    if score >= 5 then
+        return SILVER_MEDAL
+    end
+
+    if score >= 2 then
+        return BRONZE_MEDAL
+    end
+
+    return nil
+end
+
+
 function ScoreState:render()
     -- simply render the score to the middle of the screen
     love.graphics.setFont(flappyFont)
@@ -34,4 +55,9 @@ function ScoreState:render()
     love.graphics.printf('Score: ' .. tostring(self.score), 0, 100, VIRTUAL_WIDTH, 'center')
 
     love.graphics.printf('Press Enter to Play Again!', 0, 160, VIRTUAL_WIDTH, 'center')
+
+    local img = getMedal(self.score)
+    if img then
+        love.graphics.draw(img, VIRTUAL_WIDTH / 2 - img:getWidth() / 2, VIRTUAL_HEIGHT / 2 - img:getHeight() / 2 - 8)
+    end
 end
