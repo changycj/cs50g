@@ -63,6 +63,21 @@ function PlayState:update(dt)
 
     for i, powerup in pairs(self.powerups) do
         powerup:update(dt)
+
+        if powerup:collides(self.paddle) then
+            -- Spawn two balls sper power up
+            for j = 1, 2 do
+                local ball = Ball(math.random(7))
+                ball.x = powerup.x
+                ball.y = powerup.y
+                ball.dx = math.random(-200, 200)
+                ball.dy = math.random(-50, -60)
+                table.insert(self.balls, ball)
+            end
+            table.remove(self.powerups, i)
+        elseif powerup.y >= VIRTUAL_HEIGHT then
+            table.remove(self.powerups, i)
+        end
     end
 
     -- update positions based on velocity
@@ -185,25 +200,29 @@ function PlayState:update(dt)
 
         -- if ball goes below bounds, revert to serve state and decrease health
         if ball.y >= VIRTUAL_HEIGHT then
-            self.health = self.health - 1
-            gSounds['hurt']:play()
+            table.remove(self.balls, k)
 
-            if self.health == 0 then
-                gStateMachine:change('game-over', {
-                    score = self.score,
-                    highScores = self.highScores
-                })
-            else
-                self.paddle:decreaseSize()
-                gStateMachine:change('serve', {
-                    paddle = self.paddle,
-                    bricks = self.bricks,
-                    health = self.health,
-                    score = self.score,
-                    highScores = self.highScores,
-                    level = self.level,
-                    recoverPoints = self.recoverPoints
-                })
+            -- only lose health if all balls are lost
+            if #self.balls == 0 then
+                self.health = self.health - 1
+                gSounds['hurt']:play()
+                if self.health == 0 then
+                    gStateMachine:change('game-over', {
+                        score = self.score,
+                        highScores = self.highScores
+                    })
+                else
+                    self.paddle:decreaseSize()
+                    gStateMachine:change('serve', {
+                        paddle = self.paddle,
+                        bricks = self.bricks,
+                        health = self.health,
+                        score = self.score,
+                        highScores = self.highScores,
+                        level = self.level,
+                        recoverPoints = self.recoverPoints
+                    })
+                end
             end
         end
     end
