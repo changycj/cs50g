@@ -34,6 +34,9 @@ function PlayState:enter(params)
     -- give ball random starting velocity
     self.ball.dx = math.random(-200, 200)
     self.ball.dy = math.random(-50, -60)
+
+    self.powerupTimer = 0
+    self.powerups = {}
 end
 
 function PlayState:update(dt)
@@ -48,6 +51,16 @@ function PlayState:update(dt)
         self.paused = true
         gSounds['pause']:play()
         return
+    end
+
+    self.powerupTimer = self.powerupTimer + dt
+    if self.powerupTimer > 3 then
+        table.insert(self.powerups, Powerup(math.random(10)))
+        self.powerupTimer = 0
+    end
+
+    for i, powerup in pairs(self.powerups) do
+        powerup:update(dt)
     end
 
     -- update positions based on velocity
@@ -201,6 +214,11 @@ function PlayState:update(dt)
 end
 
 function PlayState:render()
+    -- render powerups
+    for k, powerup in pairs(self.powerups) do
+        powerup:render()
+    end
+
     -- render bricks
     for k, brick in pairs(self.bricks) do
         brick:render()
