@@ -22,6 +22,7 @@ require 'src/Powerup'
 
 -- the entities in our game map that give us points when we collide with them
 require 'src/Brick'
+require 'src/LockedBrick'
 
 -- a class used to generate our brick layouts (levels)
 require 'src/LevelMaker'

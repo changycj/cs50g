@@ -10,6 +10,7 @@ function Powerup:init(skin)
     self.y = 0
 
     self.skin = skin
+    self.isKey = skin == 9
 end
 
 function Powerup:update(dt)
