@@ -39,7 +39,7 @@ function PlayState:enter(params)
 
     self.powerupTimer = 0
     self.powerups = {}
-
+    self.unlockTimer = 0
     self.hasKey = false
 end
 
@@ -65,13 +65,36 @@ function PlayState:update(dt)
         self.powerupTimer = 0
     end
 
+    if self.hasKey then
+        self.unlockTimer = self.unlockTimer + dt
+
+        if self.unlockTimer > 10 then
+            self.unlockTimer = 0
+            self.hasKey = false
+            -- gSounds['music']:pause()
+            gSounds['unlock-end']:pause()
+            gSounds['unlock-end']:play()
+            -- gSounds['music']:setEffect('musicChorus', false)
+            -- gSounds['music']:play()
+        end
+    end
+
     for i, powerup in pairs(self.powerups) do
         powerup:update(dt)
 
         if powerup:collides(self.paddle) then
             -- Spawn two balls sper power up
             if powerup.isKey then
+                if not self.hasKey then
+                    self.hasKey = true
+                    -- gSounds['music']:pause()
+                    gSounds['unlock']:pause()
+                    gSounds['unlock']:play()
+                    -- gSounds['music']:setEffect('musicChorus', true)
+                    -- gSounds['music']:play()
+                end
                self.hasKey = true
+
             else
                 for j = 1, 2 do
                     local ball = Ball(math.random(7))
@@ -123,7 +146,9 @@ function PlayState:update(dt)
 
                 if not brick:isLocked() or self.hasKey then
                     -- add to score
-                    self.score = self.score + (brick.tier * 200 + brick.color * 25)
+                    -- Locked bricks are 1000 points
+                    local score = brick.color == 6 and 1000 or (brick.tier * 200 + brick.color * 25)
+                    self.score = self.score + score
 
                     -- trigger the brick's hit function, which removes it from play
                     brick:hit()

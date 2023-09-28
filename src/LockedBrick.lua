@@ -26,8 +26,8 @@ function LockedBrick:hit()
     self.psystem:emit(64)
 
     -- sound on hit
-    gSounds['brick-hit-2']:stop()
-    gSounds['brick-hit-2']:play()
+    gSounds['key-hit-1']:stop()
+    gSounds['key-hit-1']:play()
 
     -- TODO check if there's key power up
     if self.tier > 0 then
@@ -38,8 +38,8 @@ function LockedBrick:hit()
 
     -- play a second layer sound if the brick is destroyed
     if not self.inPlay then
-        gSounds['brick-hit-1']:stop()
-        gSounds['brick-hit-1']:play()
+        gSounds['key-hit-2']:stop()
+        gSounds['key-hit-2']:play()
     end
 end
 

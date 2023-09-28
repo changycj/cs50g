@@ -94,7 +94,10 @@ function love.load()
         ['recover'] = love.audio.newSource('sounds/recover.wav', 'static'),
         ['high-score'] = love.audio.newSource('sounds/high_score.wav', 'static'),
         ['pause'] = love.audio.newSource('sounds/pause.wav', 'static'),
-
+        ['key-hit-1'] = love.audio.newSource('sounds/key-hit-1.wav', 'static'),
+        ['key-hit-2'] = love.audio.newSource('sounds/key-hit-2.wav', 'static'),
+        ['unlock'] = love.audio.newSource('sounds/unlock.wav', 'static'),
+        ['unlock-end'] = love.audio.newSource('sounds/unlock-end.wav', 'static'),
         ['music'] = love.audio.newSource('sounds/music.wav', 'static')
     }
 
@@ -126,6 +129,9 @@ function love.load()
     -- play our music outside of all states and set it to looping
     gSounds['music']:play()
     gSounds['music']:setLooping(true)
+
+    gSounds['unlock']:setPitch(3)
+    gSounds['unlock-end']:setPitch(3)
 
     -- a table we'll use to keep track of which keys have been pressed this
     -- frame, to get around the fact that LÖVE's default callback won't let us
