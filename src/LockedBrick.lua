@@ -42,3 +42,7 @@ function LockedBrick:hit()
         gSounds['brick-hit-1']:play()
     end
 end
+
+function LockedBrick:isLocked()
+    return self.tier > 0
+end

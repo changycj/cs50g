@@ -39,6 +39,8 @@ function PlayState:enter(params)
 
     self.powerupTimer = 0
     self.powerups = {}
+
+    self.hasKey = false
 end
 
 function PlayState:update(dt)
@@ -57,7 +59,9 @@ function PlayState:update(dt)
 
     self.powerupTimer = self.powerupTimer + dt
     if self.powerupTimer > 3 then
-        table.insert(self.powerups, Powerup(math.random(10)))
+        local genKey = not self.hasKey and math.random() > 0.7
+        local skin = genKey and 10 or math.random(9)
+        table.insert(self.powerups, Powerup(skin))
         self.powerupTimer = 0
     end
 
@@ -66,13 +70,17 @@ function PlayState:update(dt)
 
         if powerup:collides(self.paddle) then
             -- Spawn two balls sper power up
-            for j = 1, 2 do
-                local ball = Ball(math.random(7))
-                ball.x = powerup.x
-                ball.y = powerup.y
-                ball.dx = math.random(-200, 200)
-                ball.dy = math.random(-50, -60)
-                table.insert(self.balls, ball)
+            if powerup.isKey then
+               self.hasKey = true
+            else
+                for j = 1, 2 do
+                    local ball = Ball(math.random(7))
+                    ball.x = powerup.x
+                    ball.y = powerup.y
+                    ball.dx = math.random(-200, 200)
+                    ball.dy = math.random(-50, -60)
+                    table.insert(self.balls, ball)
+                end
             end
             table.remove(self.powerups, i)
         elseif powerup.y >= VIRTUAL_HEIGHT then
@@ -113,39 +121,41 @@ function PlayState:update(dt)
             -- only check collision if we're in play
             if brick.inPlay and ball:collides(brick) then
 
-                -- add to score
-                self.score = self.score + (brick.tier * 200 + brick.color * 25)
+                if not brick:isLocked() or self.hasKey then
+                    -- add to score
+                    self.score = self.score + (brick.tier * 200 + brick.color * 25)
 
-                -- trigger the brick's hit function, which removes it from play
-                brick:hit()
+                    -- trigger the brick's hit function, which removes it from play
+                    brick:hit()
 
-                -- if we have enough points, recover a point of health
-                if self.score > self.recoverPoints then
-                    -- can't go above 3 health
-                    self.health = math.min(3, self.health + 1)
+                    -- if we have enough points, recover a point of health
+                    if self.score > self.recoverPoints then
+                        -- can't go above 3 health
+                        self.health = math.min(3, self.health + 1)
 
-                    self.paddle:increaseSize()
+                        self.paddle:increaseSize()
 
-                    -- multiply recover points by 2
-                    self.recoverPoints = self.recoverPoints + math.min(100000, self.recoverPoints * 2)
+                        -- multiply recover points by 2
+                        self.recoverPoints = self.recoverPoints + math.min(100000, self.recoverPoints * 2)
 
-                    -- play recover sound effect
-                    gSounds['recover']:play()
-                end
+                        -- play recover sound effect
+                        gSounds['recover']:play()
+                    end
 
-                -- go to our victory screen if there are no more bricks left
-                if self:checkVictory() then
-                    gSounds['victory']:play()
+                    -- go to our victory screen if there are no more bricks left
+                    if self:checkVictory() then
+                        gSounds['victory']:play()
 
-                    gStateMachine:change('victory', {
-                        level = self.level,
-                        paddle = self.paddle,
-                        health = self.health,
-                        score = self.score,
-                        highScores = self.highScores,
-                        ball = ball,
-                        recoverPoints = self.recoverPoints
-                    })
+                        gStateMachine:change('victory', {
+                            level = self.level,
+                            paddle = self.paddle,
+                            health = self.health,
+                            score = self.score,
+                            highScores = self.highScores,
+                            ball = ball,
+                            recoverPoints = self.recoverPoints
+                        })
+                    end
                 end
 
                 --

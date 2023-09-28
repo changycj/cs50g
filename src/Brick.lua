@@ -156,3 +156,7 @@ end
 function Brick:renderParticles()
     love.graphics.draw(self.psystem, self.x + 16, self.y + 8)
 end
+
+function Brick:isLocked()
+    return false
+end

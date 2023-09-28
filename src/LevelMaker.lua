@@ -85,7 +85,7 @@ function LevelMaker.createMap(level)
             end
 
             -- each block has a 5% chance of being a locked block
-            local generateKey = math.random() >= 0.95
+            local generateKey = math.random() >= 0.9
             local brickCls = generateKey and LockedBrick or Brick
             local b = brickCls(
                 -- x-coordinate
