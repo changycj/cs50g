@@ -7,6 +7,8 @@ function LockedBrick:init(x, y)
 
     -- locked is tier 1, unlocked is tier 0
     self.tier = 1
+
+    self.unlockable = false
 end
 
 function LockedBrick:hit()
@@ -45,4 +47,16 @@ end
 
 function LockedBrick:isLocked()
     return self.tier > 0
+end
+
+function LockedBrick:render()
+    if self.inPlay then
+        local dx = (self.unlockable and self.tier == 1) and math.random() or 0
+        local dy = (self.unlockable and self.tier == 1) and math.random() or 0
+        love.graphics.draw(gTextures['main'], 
+            -- multiply color by 4 (-1) to get our color offset, then add tier to that
+            -- to draw the correct tier and color brick onto the screen
+            gFrames['bricks'][1 + ((self.color - 1) * 4) + self.tier],
+            self.x + dx, self.y + dy)
+    end
 end

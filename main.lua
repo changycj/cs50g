@@ -127,6 +127,7 @@ function love.load()
     })
 
     -- play our music outside of all states and set it to looping
+    love.audio.setEffect('musicChorus', {type='chorus'})
     gSounds['music']:play()
     gSounds['music']:setLooping(true)
 

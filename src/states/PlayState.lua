@@ -71,11 +71,11 @@ function PlayState:update(dt)
         if self.unlockTimer > 10 then
             self.unlockTimer = 0
             self.hasKey = false
-            -- gSounds['music']:pause()
+            gSounds['music']:pause()
             gSounds['unlock-end']:pause()
             gSounds['unlock-end']:play()
-            -- gSounds['music']:setEffect('musicChorus', false)
-            -- gSounds['music']:play()
+            gSounds['music']:setEffect('musicChorus', false)
+            gSounds['music']:play()
         end
     end
 
@@ -87,11 +87,11 @@ function PlayState:update(dt)
             if powerup.isKey then
                 if not self.hasKey then
                     self.hasKey = true
-                    -- gSounds['music']:pause()
+                    gSounds['music']:pause()
                     gSounds['unlock']:pause()
                     gSounds['unlock']:play()
-                    -- gSounds['music']:setEffect('musicChorus', true)
-                    -- gSounds['music']:play()
+                    gSounds['music']:setEffect('musicChorus', true)
+                    gSounds['music']:play()
                 end
                self.hasKey = true
 
@@ -140,6 +140,7 @@ function PlayState:update(dt)
 
         -- detect collision across all bricks with the ball
         for k, brick in pairs(self.bricks) do
+            brick.unlockable = self.hasKey
 
             -- only check collision if we're in play
             if brick.inPlay and ball:collides(brick) then
@@ -313,4 +314,10 @@ function PlayState:checkVictory()
     end
 
     return true
+end
+
+function PlayState:exit()
+    gSounds['music']:pause()
+    gSounds['music']:setEffect('musicChorus', false)
+    gSounds['music']:play()
 end
