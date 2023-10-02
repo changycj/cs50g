@@ -13,7 +13,7 @@
 
 Tile = Class{}
 
-function Tile:init(x, y, variety)
+function Tile:init(x, y, level)
     
     -- board positions
     self.gridX = x
@@ -27,7 +27,7 @@ function Tile:init(x, y, variety)
     local x = math.random(8)
     local color = 2 * x - (x + 1) % 2
     self.color = color
-    self.variety = variety
+    self.variety = math.random(math.min(6, level))
 end
 
 function Tile:render(x, y)

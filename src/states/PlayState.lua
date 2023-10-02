@@ -61,13 +61,14 @@ function PlayState:enter(params)
     self.level = params.level
 
     -- spawn a board and place it toward the right
-    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16)
+    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16, self.level)
 
     -- grab score from params if it was passed
     self.score = params.score or 0
 
     -- score we have to reach to get to the next level
     self.scoreGoal = self.level * 1.25 * 1000
+    -- self.scoreGoal = 300
 end
 
 function PlayState:update(dt)
