@@ -68,7 +68,9 @@ function PlayState:enter(params)
 
     -- score we have to reach to get to the next level
     self.scoreGoal = self.level * 1.25 * 1000
-    -- self.scoreGoal = 300
+
+    self.resetBoard = false
+    self.resetBoardAlpha = 1
 end
 
 function PlayState:update(dt)
@@ -104,6 +106,18 @@ function PlayState:update(dt)
             level = self.level + 1,
             score = self.score
         })
+    end
+
+    -- reset the board if there are no matches left
+    if not self.board:hasAvailableMatches() then
+        self.resetBoard = true
+        self.board = Board(VIRTUAL_WIDTH - 272, 16, self.level)
+        Timer.tween(1, {
+            [self] = {resetBoardAlpha = 0}
+        }):finish(function() 
+            self.resetBoard = false
+            self.resetBoardAlpha = 1
+        end)
     end
 
     if self.canInput then
@@ -143,23 +157,8 @@ function PlayState:update(dt)
                 gSounds['error']:play()
                 self.highlightedTile = nil
             else
-                
-                -- swap grid positions of tiles
-                local tempX = self.highlightedTile.gridX
-                local tempY = self.highlightedTile.gridY
-
                 local newTile = self.board.tiles[y][x]
-
-                self.highlightedTile.gridX = newTile.gridX
-                self.highlightedTile.gridY = newTile.gridY
-                newTile.gridX = tempX
-                newTile.gridY = tempY
-
-                -- swap tiles in the tiles table
-                self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-                    self.highlightedTile
-
-                self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+                self.board:swapTiles(self.highlightedTile, newTile)
 
                 -- tween coordinates between the two so they swap
                 Timer.tween(0.1, {
@@ -174,6 +173,7 @@ function PlayState:update(dt)
 
                     -- if no matches, swap back
                     if not matches then
+                        self.board:swapTiles(self.highlightedTile, newTile)
                         Timer.tween(0.1, {
                             [oldTile] = {x = newTile.x, y = newTile.y},
                             [newTile] = {x = oldTile.x, y = oldTile.y}
@@ -274,4 +274,10 @@ function PlayState:render()
     love.graphics.printf('Score: ' .. tostring(self.score), 20, 52, 182, 'center')
     love.graphics.printf('Goal : ' .. tostring(self.scoreGoal), 20, 80, 182, 'center')
     love.graphics.printf('Timer: ' .. tostring(self.timer), 20, 108, 182, 'center')
+
+    if self.resetBoard then
+        -- our transition foreground rectangle
+        love.graphics.setColor(1, 1, 1, self.resetBoardAlpha)
+        love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
+    end
 end

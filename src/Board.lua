@@ -179,7 +179,6 @@ function Board:removeMatches()
                 if horizontal then
                     for j, rowTile in pairs(self.tiles[tile.gridY]) do
                         self.tiles[rowTile.gridY][rowTile.gridX] = nil
-                        print(rowTile.gridX)
                     end
                 else
                     -- vertical match has the same X
@@ -280,4 +279,77 @@ function Board:render()
             self.tiles[y][x]:render(self.x, self.y)
         end
     end
+end
+
+function Board:swapTiles(tile1, tile2)
+    -- swap grid positions of tiles
+    local tempX = tile1.gridX
+    local tempY = tile1.gridY
+
+    tile1.gridX = tile2.gridX
+    tile1.gridY = tile2.gridY
+    tile2.gridX = tempX
+    tile2.gridY = tempY
+
+    -- swap tiles in the tiles table
+    self.tiles[tile1.gridY][tile1.gridX] = tile1
+    self.tiles[tile2.gridY][tile2.gridX] = tile2
+end
+
+function Board:hasAvailableMatches()
+    for y = 1, #self.tiles do
+        for x = 1, #self.tiles[1] do
+            local tile1 = self.tiles[y][x]
+
+            -- has up matches
+            if y > 1 then
+                local tile2 = self.tiles[y - 1][x]
+                self:swapTiles(tile1, tile2)
+                local matches = self:calculateMatches()
+                self:swapTiles(tile1, tile2)
+                self.matches = nil
+                if matches then
+                    return true
+                end
+            end
+
+            -- has down matches
+            if y < 8 then
+                local tile2 = self.tiles[y + 1][x]
+                self:swapTiles(tile1, tile2)
+                local matches = self:calculateMatches()
+                self:swapTiles(tile1, tile2)
+                self.matches = nil
+                if matches then
+                    return true
+                end
+            end
+
+            -- has left matches
+            if x > 1 then
+                local tile2 = self.tiles[y][x - 1]
+                self:swapTiles(tile1, tile2)
+                local matches = self:calculateMatches()
+                self:swapTiles(tile1, tile2)
+                self.matches = nil
+                if matches then
+                    return true
+                end
+            end
+
+            -- has right matches
+            if x < 8 then
+                local tile2 = self.tiles[y][x + 1]
+                self:swapTiles(tile1, tile2)
+                local matches = self:calculateMatches()
+                self:swapTiles(tile1, tile2)
+                self.matches = nil
+                if matches then
+                    return true
+                end
+            end
+        end
+    end
+    
+    return false
 end
