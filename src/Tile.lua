@@ -24,7 +24,7 @@ function Tile:init(x, y, level)
     self.y = (self.gridY - 1) * 32
 
     -- tile appearance/points
-    local x = math.random(8)
+    local x = math.random(6)
     local color = 2 * x - (x + 1) % 2
     self.color = color
     self.variety = math.random(math.min(6, level))
