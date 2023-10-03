@@ -170,6 +170,24 @@ function Board:removeMatches()
     for k, match in pairs(self.matches) do
         for k, tile in pairs(match) do
             self.tiles[tile.gridY][tile.gridX] = nil
+
+            if tile.shiny then
+                -- figure out horizontal or vertical
+                -- horizontal if they have the same Y
+                local horizontal = match[1].gridY == match[2].gridY
+
+                if horizontal then
+                    for j, rowTile in pairs(self.tiles[tile.gridY]) do
+                        self.tiles[rowTile.gridY][rowTile.gridX] = nil
+                        print(rowTile.gridX)
+                    end
+                else
+                    -- vertical match has the same X
+                    for y = 1, 8 do
+                        self.tiles[y][tile.gridX] = nil
+                    end
+                end
+            end
         end
     end
 
