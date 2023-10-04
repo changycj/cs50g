@@ -21,6 +21,8 @@ function GameObject:init(def)
     self.onCollide = def.onCollide
     self.onConsume = def.onConsume
     self.hit = def.hit
+
+    self.opacity = 1
 end
 
 function GameObject:collides(target)
@@ -33,5 +35,7 @@ function GameObject:update(dt)
 end
 
 function GameObject:render()
+    love.graphics.setColor(1, 1, 1, self.opacity)
     love.graphics.draw(gTextures[self.texture], gFrames[self.texture][self.frame], self.x, self.y)
+    love.graphics.setColor(1, 1, 1, 1)
 end

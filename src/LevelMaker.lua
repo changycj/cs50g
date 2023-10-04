@@ -98,7 +98,6 @@ function LevelMaker.generate(width, height)
             -- chance to spawn a block
             if math.random(10) == 1 then
                 table.insert(objects,
-
                     -- jump block
                     GameObject {
                         texture = 'jump-blocks',
@@ -157,6 +156,57 @@ function LevelMaker.generate(width, height)
                         end
                     }
                 )
+            elseif math.random(10) == 1 then
+                local lock = GameObject {
+                    texture = 'keys-and-locks',
+                    x = (x - 1) * TILE_SIZE,
+                    y = (blockHeight - 1) * TILE_SIZE,
+                    width = 16,
+                    height = 16,
+
+                    -- make it a random variant
+                    frame = LOCKS[math.random(#LOCKS)],
+                    collidable = true,
+                    hit = false,
+                    solid = true,
+
+                    -- collision function takes itself
+                    onCollide = function(obj)
+                        gSounds['empty-block']:play()
+                    end
+                }
+                table.insert(objects, lock)
+
+                local key = GameObject {
+                    texture = 'keys-and-locks',
+                    x = (x - 1) * TILE_SIZE,
+                    y = (blockHeight - 2) * TILE_SIZE,
+                    width = 16,
+                    height = 16,
+                    frame = KEYS[math.random(#KEYS)],
+                    collidable = true,
+                    consumable = true,
+                    solid = false,
+
+                    -- gem has its own function to add to the player's score
+                    onConsume = function(player, object)
+                        gSounds['pickup']:play()
+                        player.score = player.score + 100
+
+                        Timer.tween(1, {
+                            [lock] = {opacity = 0}
+                        }):finish(function ()
+                            for k, obj in pairs(player.level.objects) do
+                                if obj.x == object.x and math.abs(obj.y - object.y) == 16 then
+                                    table.remove(player.level.objects, k)
+                                    player:changeState('falling')
+                                    break
+                                end
+                            end
+                        end)
+                    end
+                }
+                table.insert(objects, key)
             end
         end
     end
