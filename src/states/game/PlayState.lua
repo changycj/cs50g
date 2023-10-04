@@ -18,8 +18,21 @@ function PlayState:init()
     self.gravityOn = true
     self.gravityAmount = 6
 
+
+    local firstGroundColumn = -1
+    for c = 1, self.tileMap.width do
+        for r = 1, self.tileMap.height do
+            local tile = self.tileMap.tiles[r][c]
+            if tile.id == TILE_ID_GROUND then
+                firstGroundColumn = c
+                goto foundGround
+            end
+        end
+    end
+    ::foundGround::
+
     self.player = Player({
-        x = 0, y = 0,
+        x = (firstGroundColumn - 1) * 16, y = 0,
         width = 16, height = 20,
         texture = 'green-alien',
         stateMachine = StateMachine {
