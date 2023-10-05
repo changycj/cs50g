@@ -34,6 +34,13 @@ function GenerateQuads(atlas, tilewidth, tileheight)
     return spritesheet
 end
 
+function GenerateFlagQuads(atlas, tilewidth, tileheight)
+    local quads = GenerateQuads(atlas, tilewidth, tileheight)
+
+    return {quads[7], quads[7 + 9], quads[7 + 9 * 2], quads[7 + 9 * 3]}
+end
+
+
 --[[
     Divides quads we've generated via slicing our tile sheet into separate tile sets.
 ]]
@@ -98,4 +105,19 @@ function print_r ( t )
         sub_print_r(t,"  ")
     end
     print()
+end
+
+--[[
+    Utility function for slicing tables, a la Python.
+
+    https://stackoverflow.com/questions/24821045/does-lua-have-something-like-pythons-slice
+]]
+function table.slice(tbl, first, last, step)
+    local sliced = {}
+  
+    for i = first or 1, last or #tbl, step or 1 do
+      sliced[#sliced+1] = tbl[i]
+    end
+  
+    return sliced
 end

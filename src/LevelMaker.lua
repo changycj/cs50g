@@ -199,6 +199,7 @@ function LevelMaker.generate(width, height)
                         Timer.tween(1, {
                             [lock] = {opacity = 0}
                         }):finish(function ()
+                            -- lock disappears
                             for k, obj in pairs(player.level.objects) do
                                 if obj.x == object.x and math.abs(obj.y - object.y) == 16 then
                                     table.remove(player.level.objects, k)
@@ -206,6 +207,42 @@ function LevelMaker.generate(width, height)
                                     break
                                 end
                             end
+                            -- TODO: figure out proper x and y for flag
+                            
+                            -- spawn goal post
+                            local goal = GameObject {
+                                texture = 'poles',
+                                -- x = (width - 3) * TILE_SIZE,
+                                x = (x + 5) * TILE_SIZE,
+                                y = (blockHeight - 1) * TILE_SIZE,
+                                width = 16,
+                                height = 48,
+                                frame = math.random(#POLES),
+                                collidable = true,
+                                consumable = true,
+                                solid = false,
+                                onConsume = function(player, object)
+                                    gStateMachine:change('play')
+                                end
+                            }
+
+                            -- flag
+                            local flag = GameObject {
+                                texture = 'flags',
+                                x = (x + 5) * TILE_SIZE + 8,
+                                y = (blockHeight - 1) * TILE_SIZE,
+                                width = 16,
+                                height = 16,
+                                frame = math.random(#FLAGS),
+                                collidable = true,
+                                consumable = true,
+                                solid = false,
+                                onConsume = function(player, object)
+                                    gStateMachine:change('play')
+                                end
+                            }
+                            table.insert(objects, flag)
+                            table.insert(objects, goal)
                         end)
                     end
                 }
