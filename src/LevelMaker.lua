@@ -222,7 +222,10 @@ function LevelMaker.generate(width, height)
                                 consumable = true,
                                 solid = false,
                                 onConsume = function(player, object)
-                                    gStateMachine:change('play')
+                                    gStateMachine:change('play', { 
+                                        score = player.score,
+                                        width = player.level.tileMap.width + 10
+                                    })
                                 end
                             }
 
@@ -238,7 +241,10 @@ function LevelMaker.generate(width, height)
                                 consumable = true,
                                 solid = false,
                                 onConsume = function(player, object)
-                                    gStateMachine:change('play')
+                                    gStateMachine:change('play', { 
+                                        score = player.score,
+                                        width = player.level.tileMap.width + 10
+                                    })
                                 end
                             }
                             table.insert(objects, flag)

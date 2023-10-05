@@ -10,15 +10,20 @@ PlayState = Class{__includes = BaseState}
 function PlayState:init()
     self.camX = 0
     self.camY = 0
-    self.level = LevelMaker.generate(100, 10)
-    self.tileMap = self.level.tileMap
+
     self.background = math.random(3)
     self.backgroundX = 0
 
     self.gravityOn = true
     self.gravityAmount = 6
+end
 
-
+function PlayState:enter(params)
+    local width = params and params.width or 100
+    
+    self.level = LevelMaker.generate(width, 10)
+    self.tileMap = self.level.tileMap
+    
     local firstGroundColumn = -1
     for c = 1, self.tileMap.width do
         for r = 1, self.tileMap.height do
@@ -48,6 +53,8 @@ function PlayState:init()
     self:spawnEnemies()
 
     self.player:changeState('falling')
+
+    self.player.score = params and params.score or 0
 end
 
 function PlayState:update(dt)
