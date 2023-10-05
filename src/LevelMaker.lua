@@ -29,6 +29,8 @@ function LevelMaker.generate(width, height)
         table.insert(tiles, {})
     end
 
+    local xToBlockHeight = {}
+
     -- column by column generation instead of row; sometimes better for platformers
     for x = 1, width do
         local tileID = TILE_ID_EMPTY
@@ -39,17 +41,20 @@ function LevelMaker.generate(width, height)
                 Tile(x, y, tileID, nil, tileset, topperset))
         end
 
+        local blockHeight
         -- chance to just be emptiness
         if math.random(7) == 1 then
             for y = 7, height do
                 table.insert(tiles[y],
                     Tile(x, y, tileID, nil, tileset, topperset))
             end
+
+            blockHeight = 0
         else
             tileID = TILE_ID_GROUND
 
             -- height at which we would spawn a potential jump block
-            local blockHeight = 4
+            blockHeight = 4
 
             for y = 7, height do
                 table.insert(tiles[y],
@@ -207,14 +212,22 @@ function LevelMaker.generate(width, height)
                                     break
                                 end
                             end
-                            -- TODO: figure out proper x and y for flag
-                            
-                            -- spawn goal post
+
+                            -- spawn goal post, put at last flat ground tile
+                            local goalX
+                            for i = #xToBlockHeight - 1, 1, -1 do
+                                if xToBlockHeight[i] == 4 then
+                                    goalX = i
+                                    break
+                                end
+                            end
+
                             local goal = GameObject {
                                 texture = 'poles',
                                 -- x = (width - 3) * TILE_SIZE,
-                                x = (x + 5) * TILE_SIZE,
-                                y = (blockHeight - 1) * TILE_SIZE,
+                                -- x = (x + 5) * TILE_SIZE,
+                                x = (goalX - 1) * TILE_SIZE,
+                                y = (xToBlockHeight[goalX] - 1) * TILE_SIZE,
                                 width = 16,
                                 height = 48,
                                 frame = math.random(#POLES),
@@ -232,8 +245,8 @@ function LevelMaker.generate(width, height)
                             -- flag
                             local flag = GameObject {
                                 texture = 'flags',
-                                x = (x + 5) * TILE_SIZE + 8,
-                                y = (blockHeight - 1) * TILE_SIZE,
+                                x = (goalX - 1) * TILE_SIZE + 8,
+                                y = (xToBlockHeight[goalX] - 1) * TILE_SIZE,
                                 width = 16,
                                 height = 16,
                                 frame = math.random(#FLAGS),
@@ -255,6 +268,8 @@ function LevelMaker.generate(width, height)
                 table.insert(objects, key)
             end
         end
+
+        xToBlockHeight[x] = blockHeight
     end
 
     local map = TileMap(width, height)
