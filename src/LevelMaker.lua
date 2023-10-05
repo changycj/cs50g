@@ -16,6 +16,8 @@ function LevelMaker.generate(width, height)
     local objects = {}
 
     local tileID = TILE_ID_GROUND
+
+    local keyGenerated = false
     
     -- whether we should draw our tiles with toppers
     local topper = true
@@ -156,7 +158,8 @@ function LevelMaker.generate(width, height)
                         end
                     }
                 )
-            elseif math.random(10) == 1 then
+            elseif not keyGenerated and math.random(10) == 1 then
+                keyGenerated = true
                 local lock = GameObject {
                     texture = 'keys-and-locks',
                     x = (x - 1) * TILE_SIZE,
