@@ -207,6 +207,18 @@ function Room:update(dt)
 
         -- trigger collision callback on object
         if self.player:collides(object) then
+            if object.solid then
+                if self.player.direction == 'right' then
+                    self.player.x = object.x - self.player.width - 1
+                elseif self.player.direction == 'left' then
+                    self.player.x = object.x + object.width + 1
+                elseif self.player.direction == 'up' then
+                    self.player.y = object.y + object.height + 1
+                else
+                    self.player.y = object.y - self.player.height - 1
+                end
+
+            end
             object:onCollide()
         end
     end
