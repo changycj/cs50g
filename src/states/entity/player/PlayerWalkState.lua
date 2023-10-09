@@ -12,6 +12,8 @@ function PlayerWalkState:init(player, dungeon)
     self.entity = player
     self.dungeon = dungeon
 
+    self.animationName = self.entity.carryingPot and 'pot-walk-' or 'walk-'
+
     -- render offset for spaced character sprite; negated in render function of state
     self.entity.offsetY = 5
     self.entity.offsetX = 0
@@ -20,22 +22,32 @@ end
 function PlayerWalkState:update(dt)
     if love.keyboard.isDown('left') then
         self.entity.direction = 'left'
-        self.entity:changeAnimation('walk-left')
+        self.entity:changeAnimation(self.animationName .. 'left')
     elseif love.keyboard.isDown('right') then
         self.entity.direction = 'right'
-        self.entity:changeAnimation('walk-right')
+        self.entity:changeAnimation(self.animationName .. 'right')
     elseif love.keyboard.isDown('up') then
         self.entity.direction = 'up'
-        self.entity:changeAnimation('walk-up')
+        self.entity:changeAnimation(self.animationName .. 'up')
     elseif love.keyboard.isDown('down') then
         self.entity.direction = 'down'
-        self.entity:changeAnimation('walk-down')
+        self.entity:changeAnimation(self.animationName .. 'down')
     else
         self.entity:changeState('idle')
     end
 
-    if love.keyboard.wasPressed('space') then
-        self.entity:changeState('swing-sword')
+    if not self.entity.carryingPot then
+        if love.keyboard.wasPressed('space') then
+            self.entity:changeState('swing-sword')
+        end
+
+        if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+            self.entity:changeState('pot-lift')
+        end
+    else
+        if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+            self.entity:changeState('pot-throw')
+        end
     end
 
     -- perform base collision detection against walls

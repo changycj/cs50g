@@ -8,9 +8,10 @@
 
 EntityWalkState = Class{__includes = BaseState}
 
-function EntityWalkState:init(entity, dungeon)
+function EntityWalkState:init(entity, dungeon, anim)
     self.entity = entity
-    self.entity:changeAnimation('walk-down')
+    self.animationName = anim or 'walk-'
+    self.entity:changeAnimation(self.animationName .. 'down')
 
     self.dungeon = dungeon
 
@@ -71,7 +72,7 @@ function EntityWalkState:processAI(params, dt)
         -- set an initial move duration and direction
         self.moveDuration = math.random(5)
         self.entity.direction = directions[math.random(#directions)]
-        self.entity:changeAnimation('walk-' .. tostring(self.entity.direction))
+        self.entity:changeAnimation(self.animationName .. tostring(self.entity.direction))
     elseif self.movementTimer > self.moveDuration then
         self.movementTimer = 0
 
@@ -81,7 +82,7 @@ function EntityWalkState:processAI(params, dt)
         else
             self.moveDuration = math.random(5)
             self.entity.direction = directions[math.random(#directions)]
-            self.entity:changeAnimation('walk-' .. tostring(self.entity.direction))
+            self.entity:changeAnimation(self.animationName .. tostring(self.entity.direction))
         end
     end
 
