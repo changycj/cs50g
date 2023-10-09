@@ -52,6 +52,7 @@ function Room:generateEntities()
         local type = types[math.random(#types)]
 
         table.insert(self.entities, Entity {
+            type = type,
             animations = ENTITY_DEFS[type].animations,
             walkSpeed = ENTITY_DEFS[type].walkSpeed or 20,
 
@@ -158,6 +159,22 @@ function Room:update(dt)
 
         -- remove entity from the table if health is <= 0
         if entity.health <= 0 then
+            -- 1/3 chance to spawn a heart on enemy death
+            if not entity.dead and math.random(3) == 1 then                
+                -- drop a heart on random
+                local heart = GameObject(
+                    GAME_OBJECT_DEFS['heart'],
+                    entity.x,
+                    entity.y
+                )
+                table.insert(self.objects, heart)
+
+                local heartIdx = #self.objects
+                heart.onCollide = function()
+                    self.player.health = math.min(6, self.player.health + 2)
+                    table.remove(self.objects, heartIdx)
+                end
+            end
             entity.dead = true
         elseif not entity.dead then
             entity:processAI({room = self}, dt)
