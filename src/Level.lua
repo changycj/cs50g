@@ -18,12 +18,19 @@ function Level:init()
     -- actual collision callbacks can cause stack overflow and other errors
     self.destroyedBodies = {}
 
+    -- whether the player alien has made contact with anything yet
+    self.playerMadeContact = false
+
     -- define collision callbacks for our world; the World object expects four,
     -- one for different stages of any given collision
     function beginContact(a, b, coll)
         local types = {}
         types[a:getUserData()] = true
         types[b:getUserData()] = true
+
+        if types['Player'] then
+            self.playerMadeContact = true
+        end
 
         -- if we collided between both the player and an obstacle...
         if types['Obstacle'] and types['Player'] then
@@ -104,6 +111,9 @@ function Level:init()
     -- aliens in our scene
     self.aliens = {}
 
+    -- players
+    self.players = {}
+
     -- obstacles guarding aliens that we can destroy
     self.obstacles = {}
 
@@ -131,10 +141,18 @@ function Level:init()
     self.background = Background()
 end
 
-function Level:update(dt)
-    
+function Level:update(dt)    
     -- update launch marker, which shows trajectory
     self.launchMarker:update(dt)
+
+    if self.launchMarker.launched and not self.playerMadeContact then
+        if love.keyboard.wasPressed('space') then
+            local alien1 = Alien.spawnPlayer(self.launchMarker.alien, 15)
+            local alien2 = Alien.spawnPlayer(self.launchMarker.alien, -15)
+            table.insert(self.players, alien1)
+            table.insert(self.players, alien2)
+        end
+    end
 
     -- Box2D world update code; resolves collisions and processes callbacks
     self.world:update(dt)
@@ -172,13 +190,20 @@ function Level:update(dt)
 
     -- replace launch marker if original alien stopped moving
     if self.launchMarker.launched then
-        local xPos, yPos = self.launchMarker.alien.body:getPosition()
-        local xVel, yVel = self.launchMarker.alien.body:getLinearVelocity()
-        
         -- if we fired our alien to the left or it's almost done rolling, respawn
-        if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
+        local canRespawn = self.launchMarker.alien:stoppedMoving()
+        for k, p in pairs(self.players) do
+            canRespawn = canRespawn and p:stoppedMoving()
+        end
+        
+        if canRespawn then
             self.launchMarker.alien.body:destroy()
+            for k, p in pairs(self.players) do
+                p.body:destroy()
+            end
             self.launchMarker = AlienLaunchMarker(self.world)
+            self.playerMadeContact = false
+            self.players = {}
 
             -- re-initialize level if we have no more aliens
             if #self.aliens == 0 then
@@ -196,6 +221,10 @@ function Level:render()
     end
 
     self.launchMarker:render()
+
+    for k, player in pairs(self.players) do
+        player:render()
+    end
 
     for k, alien in pairs(self.aliens) do
         alien:render()

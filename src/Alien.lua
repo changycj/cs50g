@@ -38,3 +38,23 @@ function Alien:render()
         math.floor(self.body:getX()), math.floor(self.body:getY()), self.body:getAngle(),
         1, 1, 17.5, 17.5)
 end
+
+function Alien.spawnPlayer(base, dvy)
+    local x = base.body:getX()
+    local y = base.body:getY()
+    local vx, vy = base.body:getLinearVelocity()
+    local res = Alien(base.world, 'round', x, y, 'Player')
+
+    res.body:setLinearVelocity(vx, vy + dvy)
+    res.fixture:setRestitution(0.4)
+    res.body:setAngularDamping(1)
+
+    return res
+end
+
+function Alien:stoppedMoving()
+    local xPos, yPos = self.body:getPosition()
+    local xVel, yVel = self.body:getLinearVelocity()
+
+    return xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5)
+end
