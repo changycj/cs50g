@@ -213,12 +213,26 @@ function Room:update(dt)
         -- handle projectiles colliding with walls or enemies
         if object.type == 'pot' then
             if object.flying then
-                for i, entity in pairs(self.entities) do
-                    if entity:collides(object) then
+
+            end
+            for i, entity in pairs(self.entities) do
+                if entity:collides(object) then
+                    if object.flying then
                         object.destroyed = true
                         entity:damage(1)
                         gSounds['hit-enemy']:play()
+                    else
+                        if entity.direction == 'right' then
+                            entity.x = object.x - entity.width - 1
+                        elseif entity.direction == 'left' then
+                            entity.x = object.x + object.width + 1
+                        elseif entity.direction == 'up' then
+                            entity.y = object.y + object.height + 1
+                        else
+                            entity.y = object.y - entity.height - 1
+                        end
                     end
+
                 end
             end
         end
