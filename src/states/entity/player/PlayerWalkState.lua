@@ -42,7 +42,10 @@ function PlayerWalkState:update(dt)
         end
 
         if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
-            self.entity:changeState('pot-lift')
+            local pot = self.entity:canPickupPot(self.dungeon.currentRoom)
+            if pot then
+                self.entity:changeState('pot-lift')
+            end
         end
     else
         if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then

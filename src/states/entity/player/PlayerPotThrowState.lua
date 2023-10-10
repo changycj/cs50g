@@ -8,7 +8,7 @@ end
 function PlayerPotThrowState:update(dt)
     if self.player.currentAnimation.timesPlayed > 0 then
         self.player.currentAnimation.timesPlayed = 0
-        self.player.carryingPot = false
+        self.player.carryingPot = nil
         self.player:changeState('idle')
     end
 end

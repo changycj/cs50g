@@ -8,7 +8,6 @@ end
 function PlayerPotLiftState:update(dt)
     if self.player.currentAnimation.timesPlayed > 0 then
         self.player.currentAnimation.timesPlayed = 0
-        self.player.carryingPot = true
         self.player:changeState('idle')
     end
 end

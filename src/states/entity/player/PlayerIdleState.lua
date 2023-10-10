@@ -8,8 +8,9 @@
 
 PlayerIdleState = Class{__includes = EntityIdleState}
 
-function PlayerIdleState:init(entity)
+function PlayerIdleState:init(entity, dungeon)
     self.entity = entity
+    self.dungeon = dungeon
     local anim = entity.carryingPot and 'pot-idle-' or nil
     EntityIdleState:init(entity, anim)
 end
@@ -33,7 +34,11 @@ function PlayerIdleState:update(dt)
         end
 
         if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
-            self.entity:changeState('pot-lift')
+            local pot = self.entity:canPickupPot(self.dungeon.currentRoom)
+            if pot then
+                self.entity.carryingPot = pot
+                self.entity:changeState('pot-lift')
+            end
         end
     else
         if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
