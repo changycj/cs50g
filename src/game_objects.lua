@@ -36,9 +36,9 @@ GAME_OBJECT_DEFS = {
             ['idle'] = {
                 frame = 14
             },
-            ['broken'] = {
-                frame = 52
-            }
+            ['flying'] = {
+                frame = 14
+            },
         }
     },
     ['heart'] = {

@@ -106,7 +106,7 @@ function Room:generateObjects()
     -- add to list of objects in scene (only one switch for now)
     table.insert(self.objects, switch)
 
-    local pot = GameObject(
+    local pot = Projectile(
         GAME_OBJECT_DEFS['pot'],
         math.random(MAP_RENDER_OFFSET_X + TILE_SIZE,
                     VIRTUAL_WIDTH - TILE_SIZE * 2 - 16),
@@ -204,6 +204,10 @@ function Room:update(dt)
 
     for k, object in pairs(self.objects) do
         object:update(dt)
+
+        if object.destroyed then
+            table.remove(self.objects, k)
+        end
 
         -- trigger collision callback on object
         if self.player:collides(object) then
