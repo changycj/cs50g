@@ -42,6 +42,16 @@ function Projectile:update(dt)
         if self.distanceFlew > 16 * 4 then
            self.destroyed = true 
         end
+        
+        local bottomEdge = VIRTUAL_HEIGHT - (VIRTUAL_HEIGHT - MAP_HEIGHT * TILE_SIZE) 
+            + MAP_RENDER_OFFSET_Y - TILE_SIZE
+
+        if self.x <= MAP_RENDER_OFFSET_X + TILE_SIZE 
+            or self.x + self.width >= VIRTUAL_WIDTH - TILE_SIZE * 2
+            or self.y <= MAP_RENDER_OFFSET_Y + TILE_SIZE - self.height / 2
+            or self.y + self.height >= bottomEdge then
+            self.destroyed = true
+        end
     end
 end
 

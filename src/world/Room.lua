@@ -179,7 +179,6 @@ function Room:update(dt)
                 )
                 table.insert(self.objects, heart)
 
-                local heartIdx = #self.objects
                 heart.onCollide = function()
                     self.player.health = math.min(6, self.player.health + 2)
                     heart.destroyed = true
