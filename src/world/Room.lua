@@ -108,6 +108,7 @@ function Room:generateObjects()
 
     local pot = Projectile(
         GAME_OBJECT_DEFS['pot'],
+
         math.random(MAP_RENDER_OFFSET_X + TILE_SIZE,
                     VIRTUAL_WIDTH - TILE_SIZE * 2 - 16),
         math.random(MAP_RENDER_OFFSET_Y + TILE_SIZE,
@@ -181,7 +182,7 @@ function Room:update(dt)
                 local heartIdx = #self.objects
                 heart.onCollide = function()
                     self.player.health = math.min(6, self.player.health + 2)
-                    table.remove(self.objects, heartIdx)
+                    heart.destroyed = true
                 end
             end
             entity.dead = true
@@ -207,7 +208,22 @@ function Room:update(dt)
 
         if object.destroyed then
             table.remove(self.objects, k)
+            goto continue
         end
+
+        -- handle projectiles colliding with walls or enemies
+        if object.type == 'pot' then
+            if object.flying then
+                for i, entity in pairs(self.entities) do
+                    if entity:collides(object) then
+                        object.destroyed = true
+                        entity:damage(1)
+                        gSounds['hit-enemy']:play()
+                    end
+                end
+            end
+        end
+
 
         -- trigger collision callback on object
         if self.player:collides(object) then
@@ -225,6 +241,8 @@ function Room:update(dt)
             end
             object:onCollide()
         end
+
+        ::continue::
     end
 end
 
