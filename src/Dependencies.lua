@@ -45,6 +45,7 @@ require 'src/states/game/FadeInState'
 require 'src/states/game/FadeOutState'
 require 'src/states/game/PlayState'
 require 'src/states/game/StartState'
+require 'src/states/game/StatMenuState'
 require 'src/states/game/TakeTurnState'
 
 require 'src/world/Level'
