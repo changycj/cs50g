@@ -30,7 +30,7 @@ public class Gem : MonoBehaviour
 	void OnTriggerEnter(Collider other) {
 
 		// trigger coin pickup function if a helicopter collides with this
-		other.transform.parent.GetComponent<HeliController>().PickupCoin();
+		other.transform.parent.GetComponent<HeliController>().PickupCoin(5);
 		Destroy(gameObject);
 	}
 }
