@@ -46,6 +46,8 @@ public class LevelGenerator : MonoBehaviour {
 					CreateChildPrefab(wallPrefab, wallsParent, x, 1, z);
 					CreateChildPrefab(wallPrefab, wallsParent, x, 2, z);
 					CreateChildPrefab(wallPrefab, wallsParent, x, 3, z);
+
+					CreateChildPrefab(floorPrefab, floorParent, x, 0, z);
 				} else if (!characterPlaced) {
 					
 					// place the character controller on the first empty wall we generate
@@ -55,11 +57,18 @@ public class LevelGenerator : MonoBehaviour {
 
 					// flag as placed so we never consider placing again
 					characterPlaced = true;
-				}
+					CreateChildPrefab(floorPrefab, floorParent, x, 0, z);
+				} else {
+					// create floor if this is a wall or character is placed here
+					// leave floor as a hole with 1% chance otherwise
+					if (Random.value < 0.99) {
+						CreateChildPrefab(floorPrefab, floorParent, x, 0, z);
+					} else {
+						print("Hole is created here: (" + x + ", " + z + ")");
+					}
+ 				}
 
-				// create floor and ceiling
-				CreateChildPrefab(floorPrefab, floorParent, x, 0, z);
-
+				// create ceiling
 				if (generateRoof) {
 					CreateChildPrefab(ceilingPrefab, wallsParent, x, 4, z);
 				}
