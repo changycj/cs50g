@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DontDestroy : MonoBehaviour {
 
@@ -21,6 +22,13 @@ public class DontDestroy : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		SceneManager.activeSceneChanged += ChangedActiveScene;
+	}
+
+	private void ChangedActiveScene(Scene current, Scene next) {
+		if (next.name != "Play") {
+			print("Changing scenes: " + next.name);
+			Destroy(gameObject);
+		}
 	}
 }
