@@ -77,6 +77,7 @@ public class LevelGenerator : MonoBehaviour {
 
 		// spawn the pickup at the end
 		var myPickup = Instantiate(pickup, new Vector3(mazeX, 1, mazeY), Quaternion.identity);
+		print("Pick up is here: (" + mazeX + ", " + mazeY + ")");
 		myPickup.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
 	}
 

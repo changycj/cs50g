@@ -13,7 +13,7 @@ public class LevelText : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        SceneManager.activeSceneChanged += ChangedActiveScene;
     }
 
     // Update is called once per frame
